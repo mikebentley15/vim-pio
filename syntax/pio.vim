@@ -19,7 +19,7 @@ syn keyword pioInstruction contained
       \ set
       \ wait
       \ skipwhite nextgroup=pioArgs
-syn keyword pioTodos contained
+syn keyword pioTodo contained
       \ FIXME
       \ FixMe
       \ Fixme
@@ -31,10 +31,10 @@ syn keyword pioTodos contained
       \ fixme
       \ note
       \ todo
-syn keyword pioProgramName  contained "[a-zA-Z_][0-9a-zA-Z_]*"
-syn match   pioKeyLabel   "\.program"  skipwhite nextgroup=pioProgramName
-syn keyword pioDefinePublic contained "PUBLIC" skipwhite nextgroup=pioIdentifier,pioNumber
-syn match   pioKeyLabel   "^\.define"   skipwhite nextgroup=pioDefinePublic,pioIdentifier,pioNumber
+syn match   pioProgramName  contained "\<\I\i*\>"
+syn match   pioKeyLabel   "^\.program"  skipwhite nextgroup=pioProgramName
+syn keyword pioPublic contained PUBLIC
+syn region  pioDefine matchgroup=pioKeyLabel start="^\.define" end="$" keepend contains=pioPublic,pioIdentifier,pioNumber
 "syn match   pioKeyLabel   "^\.lang_opt"
 syn match   pioKeyLabel   "^\.origin"        display
 syn match   pioKeyLabel   "^\.side_set"      display
@@ -96,8 +96,10 @@ syn keyword pioPythonKeyword contained
       \ JOIN_RX
       \ JOIN_TX
 syn match   pioIdentifier contained  "\<\I\i*\>" display
-syn match   pioLabel        "^\I\i*:"he=e-1                display
-syn match   pioLabel        "^PUBLIC \I\i*:"ms=s+7,he=e-1  display
+syn match   pioLabel        contained "\I\i*:"he=e-1
+syn region  pioPublicLabel  matchgroup=pioPublic start="^PUBLIC "he=e-1 end="$" keepend contains=pioLabel,pioComment
+syn region  pioNonpublicLabel matchgroup=pioLabel start="^\I\i*:"he=e-1 end="$" keepend contains=pioComment
+"syn match   pioLabel        "^PUBLIC \I\i*:"ms=s+7,he=e-1  display contains=pioPublic
 
 syn case match
 
@@ -135,24 +137,21 @@ syn region  pioCLangRegion
       \ contains=@C,pioLanguage
 hi def link pioCGroup           Delimiter
 
-
-hi def link pioProgramName      Special
-hi def link pioDefinePublic     Special
-hi def link pioJmpInstruction   Function
+hi def link pioProgramName      String
+hi def link pioPublic           Include
+hi def link pioJmpInstruction   pioInstruction
 hi def link pioInstruction      Function
-hi def link pioInstrOther       Conditional
+hi def link pioInstrOther       Operator
 hi def link pioInstrDest        Structure
-hi def link pioTodos            Todo
+hi def link pioTodo             Todo
 hi def link pioKeyLabel         Structure
-hi def link pioKeyword          Statement
+hi def link pioKeyword          Keyword
 hi def link pioLanguage         Include
-hi def link pioPythonKeyword    Statement
+hi def link pioPythonKeyword    Keyword
 hi def link pioIdentifier       Identifier
 hi def link pioLabel            Label
 hi def link pioNumber           Number
 hi def link pioComment          Comment
-
-
 
 " Blatantly stolen from vim74\syntax\c.vim
 " when wanted, highlight trailing white space
